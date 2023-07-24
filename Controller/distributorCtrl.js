@@ -745,7 +745,88 @@ const resendOtp = async (req, res) => {
 };
 
 
+// router.post('/determine-leader',
+  const leader = async (req, res) => {
+  const { userId } = req.body;
 
+  try {
+    // Calculate the turnover for the given userId
+    const turnover = await calculateTurnover(userId);
+
+    // Find the user based on the given userId
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Determine if the user is a leader
+    const isLeader = turnover >= 25;
+
+    // Update the user's 'leader' field
+    user.leader = isLeader;
+    await user.save();
+
+    res.json({
+      status: 200,
+      message: 'Leader status and turnover calculated successfully',
+      data: {
+        userId: user._id,
+        leader: user.leader,
+        turnover,
+      },
+    });
+  } catch (error) {
+    res.json({
+      status: 500,
+      message: error.message,
+    });
+  }
+};
+
+ 
+  const getleader =async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Calculate the turnover for the given userId
+    const turnover = await calculateTurnover(userId);
+
+    // Find the user based on the given userId
+    const user = await User.findById(userId).populate('teamMembers');
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Determine if the user is a leader
+    const isLeader = turnover >= 25;
+
+    res.json({
+      status: 200,
+      message: 'Distributor details fetched successfully',
+      data: {
+        userId: user._id,
+        name: user.name,
+        email: user.email,
+        city: user.city,
+        mobile: user.mobile,
+        userType: user.userType,
+        address: user.address,
+        pincode: user.pincode,
+        sales: user.sales,
+        leader: isLeader,
+        turnover,
+        teamMembers: user.teamMembers,
+      },
+    });
+  } catch (error) {
+    res.json({
+      status: 500,
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   createUser,
@@ -765,5 +846,7 @@ module.exports = {
   ForgetPassword,
   resetPasswordOTP,
   verifyOtp,
-  resendOtp
+  resendOtp,
+  leader,
+  getleader
 }

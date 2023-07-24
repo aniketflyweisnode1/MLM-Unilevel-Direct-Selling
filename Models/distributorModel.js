@@ -36,7 +36,7 @@ var userSchema = new mongoose.Schema(
       type: String,
     },
     pincode: {
-      type: String, 
+      type: String,
     },
     sales: {
       type: Number,
@@ -56,6 +56,10 @@ var userSchema = new mongoose.Schema(
     level: {
       type: Number,
       default: 1
+    },
+    leader: {
+      type: Boolean,
+      default: false,
     },
     teamMembers: [{
       type: mongoose.Schema.Types.ObjectId, ref: 'subDistributor'
