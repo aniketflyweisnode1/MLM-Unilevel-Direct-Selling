@@ -745,7 +745,7 @@ const resendOtp = async (req, res) => {
 };
 
 
-// router.post('/determine-leader',
+
   const leader = async (req, res) => {
   const { userId } = req.body;
 

@@ -39,35 +39,29 @@ const createOrder = async (req, res) => {
     } else {
       finalAmount = userCart.cartTotal;
     }
+    console.log(`final Amount = ${finalAmount}`);
 
     // Calculate GST amount
     const gstPercentage = 18;
     const gstAmount = (finalAmount * gstPercentage) / 100;
-    finalAmount -= gstAmount;
-    console.log(`final Amount = ${finalAmount}`)
+    lessGstfinalAmount = (finalAmount-gstAmount);
+    console.log(`GST final Amount = ${lessGstfinalAmount}`)//5000 - 4100 = 900
 
-    // Subtract the cost price (75% of the amount)
-    const costPricePercentage = 75;
-    const costPriceAmount = (finalAmount * costPricePercentage) / 100;
-    console.log(`cost price amount ${costPriceAmount}`)
-    finalAmount -= costPriceAmount;
-    console.log(`cost price final Amount = ${finalAmount}`)
-
+    // cost price (75% of the amount)
+    const costPricePercentage = 75; 
+    const costPriceAmount = (lessGstfinalAmount * costPricePercentage) / 100;
+    console.log(`cost price amount ${costPriceAmount}`) //3075
+   
     // Calculate distributor's amount (over all margin 20.5%)
-    const distributorMarginPercentage = 20.5;
-    const distributorMarginAmount = (finalAmount * distributorMarginPercentage) / 100;
-    console.log(`distributor Margin Amount = ${distributorMarginAmount}`)
-    finalAmount -= distributorMarginAmount;
-    console.log(`distributor Margin Amount final Amount = ${finalAmount}`)
+    const OverAllMarginPercentage = 20.5;
+    const OverAllMarginAmount = (finalAmount * OverAllMarginPercentage) / 100;
+    console.log(`Over all Margin Amount = ${OverAllMarginAmount}`)
 
 
     // Calculate company's margin amount (4.10%)
     const companyMarginPercentage = 4.10;
     const companyMarginAmount = (finalAmount * companyMarginPercentage) / 100;
-    console.log(`company margin = ${(finalAmount * companyMarginPercentage) / 100}`)
-    finalAmount -= companyMarginAmount;
-    console.log(`company Margin final Amount = ${finalAmount}`)
-
+    console.log(`company margin = ${companyMarginAmount}`)
 
     // Balance to distribute (16.40%)
     const balanceToDistributePercentage = 16.40;
@@ -81,18 +75,16 @@ const createOrder = async (req, res) => {
     // Distributor's amount based on their level
     if (distributorLevel <= 10) {
       // Define the level-wise percentages and calculate the amount
-      const levelWisePercentage = [35, 20, 10, 8, 7, 6, 5, 4, 3, 2];//  2,3,4,5,6,7,8,10,20,35
+      const levelWisePercentage = [35, 20, 10, 8, 7, 6, 5, 4, 3, 2];
       balanceToDistribute *= levelWisePercentage[distributorLevel - 1] / 100;
       console.log(`levelWisePercentage = ${levelWisePercentage[distributorLevel - 1] / 100}`)
     }
-    console.log(`balanceToDistribute = ${balanceToDistribute}`)
-    // Distributor's amount after calculating the level-based percentage
-    let distributorAmount = distributorMarginAmount + balanceToDistribute;
-    console.log(`distributor Amount = ${distributorAmount}`)
+    // console.log(`distributor Amount = ${distributorAmount}`)
 
     if (user.parentId) {
       // Fetch the parent's wallet and add the distributor's amount to it
       const parent = await User.findById(user.parentId);
+      console.log(`parent = ${parent.name}`);
       if (parent) {
         const parentWallet = await Wallet.findOne({ user: parent._id });
         if (parentWallet) {
@@ -109,7 +101,7 @@ const createOrder = async (req, res) => {
     }
 
     // Save the updated user data to the database
-    user.wallet += distributorMarginAmount;
+    user.wallet += distributorAmount;
     user.sales += finalAmount;
     await user.save();
 
@@ -154,9 +146,9 @@ const createOrder = async (req, res) => {
   }
 };
 
-module.exports = {
+/* module.exports = {
   createOrder,
-};
+}; */
 
 
 module.exports = {
