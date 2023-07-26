@@ -1,6 +1,6 @@
-const mongoose = require("mongoose"); // Erase if already required
+const mongoose = require("mongoose"); 
 
-// Declare the Schema of the Mongo model
+
 var userSchema = new mongoose.Schema(
   {
     name: {
@@ -61,7 +61,7 @@ var userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    teamMembers: [{
+    Kutumbh: [{
       type: mongoose.Schema.Types.ObjectId, ref: 'subDistributor'
     }]
   },
@@ -69,6 +69,25 @@ var userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+
+userSchema.methods.getDirectChildren = async function () {
+  const children = await this.model("User").find({ parentId: this._id });
+  return children;
+};
+
+// Method to find leaf nodes (distributors with no further downline) of a distributor
+userSchema.methods.getLeafNodes = async function () {
+  const leafNodes = await this.model("User").find({ parentId: this._id, Kutumbh: [] });
+  return leafNodes;
+};
+
+// Method to find siblings (same parent, excluding self) of a distributor
+userSchema.methods.getSiblings = async function () {
+  const siblings = await this.model("User").find({ parentId: this.parentId, _id: { $ne: this._id } });
+  return siblings;
+};
+
 
 module.exports = mongoose.model("User", userSchema);
 

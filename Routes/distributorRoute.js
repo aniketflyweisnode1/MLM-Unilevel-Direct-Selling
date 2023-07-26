@@ -19,7 +19,10 @@ const {
   resetPasswordOTP,
   resendOtp,
   leader,
-  getleader
+  getleader,
+  childBranches,
+  getdownline,
+
 } = require("../Controller/distributorCtrl");
 const { isAuthenticatedUser } = require("../Middleware/auth");
 const router = express.Router();
@@ -43,6 +46,9 @@ router.post("/cart/applycoupon", isAuthenticatedUser, applyCoupon);
 router.post("/:id/teammember", AddTeamMemberByDistributor);
 router.get("/:id/teammember", getTeamMembersCount);
 router.post('/determine-leader', leader);
-router.get('/distributor/:userId',getleader)
+router.get('/distributor/:userId', getleader)
+router.get("/:distributorId/child", childBranches)
+router.get("/:id/downline",getdownline)
+
 
 module.exports = router;

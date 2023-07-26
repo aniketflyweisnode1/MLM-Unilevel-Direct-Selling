@@ -183,44 +183,6 @@ const deleteaUser = async (req, res) => {
   }
 };
 
-// const UserCart = async (req, res) => {
-//   const { cart } = req.body;
-//   const { _id } = req.user;
-//   try {
-//     let products = [];
-//     const user = await User.findById(_id);
-//     // check if user already have products in cart
-//     const alreadyExistCart = await Cart.findOne({ orderby: user._id });
-//     if (alreadyExistCart) {
-//       alreadyExistCart.remove();
-//     }
-//     for (let i = 0; i < cart.length; i++) {
-//       let object = {};
-//       object.product = cart[i]._id;
-//       object.count = cart[i].count;
-//       object.colour = cart[i].colour;
-
-//       let getPrice = await Product.findById(cart[i]._id).select("price").exec();
-//       object.price = getPrice.price;
-//       products.push(object);
-//       for (let i = 0; i < products.length; i++){
-//         cartTptal = cartTotal+products[i].price * products[i].count;
-//       }
-//       console.log(products.cartTotal);
-//       res.json({
-//         status: 200,
-//         message: "Product cart successfully updated"
-
-//       });
-//     }
-//   } catch (error) {
-//     res.json({
-//       status: 500,
-//       message: error.message
-//     });
-//   }
-// }
-
 const UserCart = async (req, res) => {
   const { cart } = req.body;
   const { _id } = req.user;
@@ -381,7 +343,6 @@ const applyCoupon = async (req, res) => {
   res.json({ totalAfterDiscount })
 };
 
-
 const getTeamMembers = async (req, res) => {
   const { parentId } = req.params;
   console.log(parentId);
@@ -400,170 +361,6 @@ const getTeamMembers = async (req, res) => {
     return res.status(500).json({ success: false, message: "Internal server error." });
   }
 };
-
-// app.post("/api/distributor/:id/subdistributor", async (req, res) => {
-//   try {
-//     const distributorId = req.params.id;
-//     const subDistributorData = req.body;
-
-//     const distributor = await Distributor.findById(distributorId);
-//     if (!distributor) {
-//       return res.status(404).json({ message: "Distributor not found" });
-//     }
-
-//     if (distributor.teamMembers.length >= 10) {
-//       return res
-//         .status(400)
-//         .json({ message: "Distributor cannot have more than 10 subdistributors" });
-//     }
-
-//     distributor.teamMembers.push(subDistributorData);
-//     await distributor.save();
-
-//     res.status(201).json({ message: "Subdistributor added successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// });
-
-// const AddTeamMemberByDistributor = async (req, res) => {
-//   try {
-//     const distributorId = req.params.id;
-//     const subDistributorData = req.body;
-//     const distributor = await User.findById(distributorId);
-//     if (!distributor) {
-//       return res.status(404).json({ message: "Distributor not found" });
-//     }
-
-//     if (distributor.teamMembers.length >= 10) {
-//       return res
-//         .status(400)
-//         .json({ message: "Distributor cannot have more than 10 subdistributors" });
-//     }
-//     distributor.teamMembers.push(subDistributorData);
-//     await distributor.save();
-
-//     res.status(201).json({ message: "Subdistributor added successfully" });
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({ message: error.message });
-//   }
-// }
-
-// const AddTeamMemberByDistributor = async (req, res) => {
-//   try {
-//     const distributorId = req.params.id;
-//     const subDistributorData = req.body;
-//     const distributor = await User.findById(distributorId);
-//     if (!distributor) {
-//       return res.status(404).json({ message: "Distributor not found" });
-//     }
-
-//     if (distributor.teamMembers.length >= 10) {
-//       return res
-//         .status(400)
-//         .json({ message: "Distributor cannot have more than 10 subdistributors" });
-//     }
-
-//     // Assuming the subDistributorData object has a valid ObjectId property called "_id"
-//     const subDistributorId = subDistributorData._id;
-
-//     distributor.teamMembers.push(subDistributorId);
-//     await distributor.save();
-
-//     res.status(201).json({
-//       message: "Subdistributor added successfully",
-//       data:distributor
-//     });
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({ message: error.message });
-//   }
-// }
-
-// const AddTeamMemberByDistributor = async (req, res) => {
-//   try {
-//     const distributorId = req.params.id;
-//     const subDistributorData = req.body;
-//     const distributor = await User.findById(distributorId);
-//     if (!distributor) {
-//       return res.status(404).json({ message: "Distributor not found" });
-//     }
-
-//     if (distributor.teamMembers.length >= 10) {
-//       return res
-//         .status(400)
-//         .json({ message: "Distributor cannot have more than 10 subdistributors" });
-//     }
-
-//     // Create a new User document for the subDistributor
-//     const subDistributor = new User(subDistributorData);
-//     await subDistributor.save();
-
-//     // Push the ObjectId of the new subDistributor into the teamMembers array
-//     distributor.teamMembers.push(subDistributor._id);
-//     await distributor.save();
-
-//     res.status(201).json({
-//       message: "Subdistributor added successfully",
-//       data: subDistributor
-//     });
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({
-//       message: error.message,
-//       data: distributor
-//     });
-//   }
-// }
-
-
-// const AddTeamMemberByDistributor = async (req, res) => {
-//   try {
-//     const distributorId = req.params.id;
-//     const subDistributorData = req.body;
-//     const distributor = await User.findById(distributorId);
-
-//     if (!distributor) {
-//       return res.status(404).json({ message: "Distributor not found" });
-//     }
-
-//     if (distributor.level > 10) {
-//       return res.status(400).json({ message: "Maximum level limit reached" });
-//     }
-
-//     // if (distributor.sales > 25000) {
-//     //   // distributor.level = distributor.level - 1;
-//     //   await distributor.save();
-//     //   return res.status(400).json({ message: "Distributor level decreased" });
-//     // }
-
-//     if (distributor.level > 1 && distributor.teamMembers.length >= 10) {
-//       return res
-//         .status(400)
-//         .json({ message: "Distributor cannot have more than 10 subdistributors and if you want add more Members So you should be purchasing atleast 25K" });
-//     }
-
-//     // Create a new User document for the subDistributor
-//     const subDistributor = new User(subDistributorData);
-//     await subDistributor.save();
-
-//     // Push the ObjectId of the new subDistributor into the teamMembers array
-//     distributor.teamMembers.push(subDistributor._id);
-//     distributor.level = distributor.level + 1;
-//     await distributor.save();
-
-//     res.status(201).json({
-//       message: "Subdistributor added successfully",
-//       data: subDistributor
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({
-//       message: error.message
-//     });
-//   }
-// };
 
 const getTeamMembersCount = async (req, res) => {
   try {
@@ -612,7 +409,7 @@ const AddTeamMemberByDistributor = async (req, res) => {
       return res.status(404).json({ message: "Distributor not found" });
     }
 
-    if (distributor.level > 1 && distributor.teamMembers.length >= 10) {
+    if (distributor.level > 1 && distributor.Kutumbh.length >= 10) {
       if (distributor.sales < 25000) {
         distributor.level = distributor.level - 1;
         await distributor.save();
@@ -629,7 +426,7 @@ const AddTeamMemberByDistributor = async (req, res) => {
       }
     }
 
-    if (distributor.level === 1 && distributor.teamMembers.length >= 10) {
+    if (distributor.level === 1 && distributor.Kutumbh.length >= 10) {
       return res.status(400).json({
         message: "Distributor cannot have more than 10 subdistributors",
       });
@@ -655,8 +452,13 @@ const AddTeamMemberByDistributor = async (req, res) => {
     await subDistributor.save();
 
     // Push the ObjectId of the new subDistributor into the teamMembers array
-    distributor.teamMembers.push(subDistributor._id);
+    distributor.Kutumbh.push(subDistributor._id);
     distributor.level = distributor.level + 1;
+
+    if (distributor.Kutumbh.length >= 5) {
+      distributor.leader = true;
+    }
+
     await distributor.save();
 
     res.status(201).json({
@@ -744,9 +546,7 @@ const resendOtp = async (req, res) => {
   }
 };
 
-
-
-  const leader = async (req, res) => {
+const leader = async (req, res) => {
   const { userId } = req.body;
 
   try {
@@ -784,8 +584,7 @@ const resendOtp = async (req, res) => {
   }
 };
 
- 
-  const getleader =async (req, res) => {
+const getleader = async (req, res) => {
   const { userId } = req.params;
 
   try {
@@ -828,6 +627,51 @@ const resendOtp = async (req, res) => {
   }
 };
 
+
+const childBranches = async (req, res) => {
+  try {
+    const distributorId = req.params.userId;
+    const downline = await getDownline(distributorId);
+    res.status(200).json(downline);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+const getdownline = async (req, res) => {
+  try {
+    const distributorId = req.params.id;
+    const distributor = await User.findOne({ _id: distributorId });
+    let downlineMembers = [];
+
+    const { type } = req.query;
+    switch (type) {
+      case "direct-children":
+        downlineMembers = await distributor.getDirectChildren();
+        break;
+      case "leaf-nodes":
+        downlineMembers = await distributor.getLeafNodes();
+        break;
+      case "siblings":
+        downlineMembers = await distributor.getSiblings();
+        break;
+      default:
+        res.status(400).json({ error: "Invalid downline type specified in query parameters" });
+        return;
+    }
+
+    res.status(200).json({
+      message: `Your Downline (${type})`,
+      totalMembers: downlineMembers.length,
+      downlineMembers,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -847,6 +691,26 @@ module.exports = {
   resetPasswordOTP,
   verifyOtp,
   resendOtp,
+  childBranches,
   leader,
-  getleader
+  getleader,
+  getdownline
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
