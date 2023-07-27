@@ -496,7 +496,7 @@ const ForgetPassword = async (req, res) => {
 };
 
 const resetPasswordOTP = async (req, res) => {
-  const { mobile, otp, newPassword } = req.body;
+  const { mobile, otp, password } = req.body;
 
   try {
     const user = await User.findOne({ mobile, otp: otp });
@@ -504,14 +504,15 @@ const resetPasswordOTP = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "Invalid OTP or mobile number" });
     }
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Update the user's password with the new password
-    user.password = newPassword;
-    // Clear the resetPasswordOTP after using it for password reset
+    user.password = hashedPassword;
     user.otp = undefined;
     await user.save();
 
-    res.json({ message: "Password reset successful" });
+    res.json({
+      message: "Password reset successful",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -672,6 +673,121 @@ const getdownline = async (req, res) => {
   }
 };
 
+function countMembers(distributorId) {
+  return User.findById(distributorId).then((distributor) => {
+    if (!distributor) {
+      return 0;
+    }
+    let memberCount = 0;
+    if (distributor.Kutumbh.length === 2) {
+      memberCount = 1;
+    }
+    return Promise.all(distributor.Kutumbh.map((subDistributorId) => countMembers(subDistributorId))).then((counts) => {
+      return memberCount + counts.reduce((acc, count) => acc + count, 0);
+    });
+  });
+}
+
+const distributorKutumbh = async (req, res) => {
+  try {
+    const distributors = await User.find();
+
+    const result = await Promise.all(
+      distributors.map(async (distributor) => {
+        const memberCount = await countMembers(distributor.id);
+        const kutumbhCount = distributor.Kutumbh.length;
+
+        return {
+          distributorId: distributor.id,
+          memberCount,
+          kutumbhCount,
+        };
+      })
+    );
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+function countKutumbhMembers(distributorId) {
+  return User.countDocuments({ parentId: distributorId }).exec()
+    .then((count) => {
+      return count;
+    })
+    .catch((err) => {
+      console.error("Error counting kutumbh members:", err);
+      throw err;
+    });
+}
+
+function getTreeHeightAndDepth(distributorId, depth = 0) {
+  return User.find({ parentId: distributorId }).exec()
+    .then((children) => {
+      if (children.length === 0) {
+        return { height: depth, depth: depth };
+      }
+
+      let promises = children.map((child) => {
+        return getTreeHeightAndDepth(child._id, depth + 1);
+      });
+
+      return Promise.all(promises)
+        .then((results) => {
+          const maxHeight = Math.max(...results.map((res) => res.height));
+          const maxDepth = Math.max(...results.map((res) => res.depth));
+          return { height: maxHeight, depth: maxDepth };
+        });
+    })
+    .catch((err) => {
+      console.error("Error calculating tree height and depth:", err);
+      throw err;
+    });
+}
+
+function countAvailableKutumbhs(distributorId) {
+  return User.countDocuments({ parentId: distributorId }).exec()
+    .then((count) => {
+      return count;
+    })
+    .catch((err) => {
+      console.error("Error counting available kutumbhs:", err);
+      throw err;
+    });
+}
+
+const kutumbhMembers = async (req, res) => {
+  const distributorId = req.params.distributorId;
+  try {
+    const count = await countKutumbhMembers(distributorId);
+    res.json({ count });
+  } catch (err) {
+    res.status(500).json({ error: "Error counting kutumbh members" });
+  }
+};
+
+const kutumbhTree = async (req, res) => {
+  const distributorId = req.params.distributorId;
+  try {
+    const { height, depth } = await getTreeHeightAndDepth(distributorId);
+    res.json({ height, depth });
+  } catch (err) {
+    res.status(500).json({ error: "Error calculating tree height and depth" });
+  }
+}
+
+const kutumbhAvailable = async (req, res) => {
+
+  const distributorId = req.params.distributorId;
+  try {
+    const count = await countAvailableKutumbhs(distributorId);
+    res.json({ count });
+  } catch (err) {
+    res.status(500).json({ error: "Error counting available kutumbhs" });
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -694,7 +810,11 @@ module.exports = {
   childBranches,
   leader,
   getleader,
-  getdownline
+  getdownline,
+  distributorKutumbh,
+  kutumbhMembers,
+  kutumbhAvailable,
+  kutumbhTree
 }
 
 

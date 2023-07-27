@@ -22,6 +22,10 @@ const {
   getleader,
   childBranches,
   getdownline,
+  distributorKutumbh,
+  kutumbhMembers,
+  kutumbhAvailable,
+  kutumbhTree,
 
 } = require("../Controller/distributorCtrl");
 const { isAuthenticatedUser } = require("../Middleware/auth");
@@ -46,9 +50,12 @@ router.post("/cart/applycoupon", isAuthenticatedUser, applyCoupon);
 router.post("/:id/teammember", AddTeamMemberByDistributor);
 router.get("/:id/teammember", getTeamMembersCount);
 router.post('/determine-leader', leader);
-router.get('/distributor/:userId', getleader)
-router.get("/:distributorId/child", childBranches)
-router.get("/:id/downline",getdownline)
-
+router.get('/distributor/:userId', getleader);
+router.get("/:distributorId/child", childBranches);
+router.get("/:id/downline", getdownline);
+router.get("/distributor/kutumbh/count", distributorKutumbh)
+router.get("/kutumbh-members/:distributorId", kutumbhMembers)
+router.get("/available-kutumbhs/:distributorId", kutumbhAvailable)
+router.get("/tree-height-depth/:distributorId", kutumbhTree)
 
 module.exports = router;
