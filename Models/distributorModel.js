@@ -52,7 +52,7 @@ var userSchema = new mongoose.Schema(
     }, // Flag indicating if the distributor is active
     parentId: {
       type: mongoose.Schema.Types.ObjectId, ref: 'Distributor'
-    }, // Reference to the parent distributor
+    }, 
     level: {
       type: Number,
       default: 1
@@ -76,13 +76,13 @@ userSchema.methods.getDirectChildren = async function () {
   return children;
 };
 
-// Method to find leaf nodes (distributors with no further downline) of a distributor
+
 userSchema.methods.getLeafNodes = async function () {
   const leafNodes = await this.model("User").find({ parentId: this._id, Kutumbh: [] });
   return leafNodes;
 };
 
-// Method to find siblings (same parent, excluding self) of a distributor
+
 userSchema.methods.getSiblings = async function () {
   const siblings = await this.model("User").find({ parentId: this.parentId, _id: { $ne: this._id } });
   return siblings;

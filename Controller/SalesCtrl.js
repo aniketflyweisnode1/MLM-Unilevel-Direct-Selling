@@ -1,4 +1,5 @@
 const Sale = require("../Models/SalesModel");
+const Distributor = require("../Models/distributorModel");
 
 
 const CreateSales = async (req, res) => {
@@ -13,7 +14,7 @@ const CreateSales = async (req, res) => {
 
     await sale.save();
 
-    // Update the total sales made by the distributor
+
     await Distributor.findByIdAndUpdate(distributorId, { $inc: { sales: amount } });
 
     res.status(201).json({ message: 'Sale added successfully' });

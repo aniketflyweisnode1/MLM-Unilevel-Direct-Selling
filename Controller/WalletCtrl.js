@@ -1,6 +1,6 @@
 const Wallet = require("../Models/WalletModel");
 
-// router.post("/add-funds/:userId",
+
   const addMoney = async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -29,7 +29,6 @@ const Wallet = require("../Models/WalletModel");
   }
 };
 
-// router.post("/process-offer",
   const offerMoney = async (req, res) => {
   try {
     
